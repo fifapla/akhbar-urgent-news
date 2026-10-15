@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1089842642036",
+    "project_id": "akhbarak-project",
+    "storage_bucket": "akhbarak-project.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1089842642036:android:6f363fb92835b365f7a521",
+        "android_client_info": {
+          "package_name": "com.akhbar.akhbar"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA1o9YBqFdMQpeiydj_luAgY_UUekt6-MU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

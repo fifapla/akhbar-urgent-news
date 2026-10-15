@@ -1,0 +1,41 @@
+name: urgent-news
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+    inputs:
+      test:
+        description: 'أرسل إشعارًا تجريبيًا فقط'
+        type: boolean
+        default: false
+
+concurrency:
+  group: urgent
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install google-auth requests
+      - name: استرجاع ما أُرسل سابقًا
+        uses: actions/cache@v4
+        with:
+          path: state/seen.json
+          key: seen-${{ github.run_id }}
+          restore-keys: |
+            seen-
+      - name: فحص الأخبار العاجلة
+        run: python server/check_urgent.py
+        env:
+          FCM_SERVICE_ACCOUNT: ${{ secrets.FCM_SERVICE_ACCOUNT }}
+          TEST_ONLY: ${{ github.event.inputs.test == 'true' && '1' || '' }}
