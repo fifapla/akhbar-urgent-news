@@ -173,22 +173,30 @@ def access_token(info):
 def send(info, title, body, link):
     import requests
 
-    msg = {
-        "message": {
-            "topic": "urgent",
-            "notification": {"title": title, "body": body},
-            "data": {"link": link or ""},
-            "android": {"priority": "HIGH", "ttl": "3600s"},
+    token = access_token(info)
+    # قناة لكل نمط تنبيه (صوت واهتزاز، صوت، اهتزاز، صامت) + الموضوع القديم للنسخ السابقة
+    targets = [("urgent_sv", "urgent_sv"), ("urgent_s", "urgent_s"),
+               ("urgent_v", "urgent_v"), ("urgent_q", "urgent_q"), ("urgent", None)]
+    for topic, channel in targets:
+        android = {"priority": "HIGH", "ttl": "3600s"}
+        if channel:
+            android["notification"] = {"channel_id": channel}
+        msg = {
+            "message": {
+                "topic": topic,
+                "notification": {"title": title, "body": body},
+                "data": {"link": link or ""},
+                "android": android,
+            }
         }
-    }
-    r = requests.post(
-        f"https://fcm.googleapis.com/v1/projects/{info['project_id']}/messages:send",
-        headers={"Authorization": f"Bearer {access_token(info)}"},
-        json=msg,
-        timeout=20,
-    )
-    print("FCM", r.status_code, r.text[:200])
-    r.raise_for_status()
+        r = requests.post(
+            f"https://fcm.googleapis.com/v1/projects/{info['project_id']}/messages:send",
+            headers={"Authorization": f"Bearer {token}"},
+            json=msg,
+            timeout=20,
+        )
+        print("FCM", topic, r.status_code, r.text[:200])
+        r.raise_for_status()
 
 
 def main():
